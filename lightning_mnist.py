@@ -26,28 +26,31 @@ class LitNN(pl.LightningModule):
 		images = images.view(images.size(0), -1)
 		outputs = self.lyrs(images)
 		loss = F.cross_entropy(outputs, labels)
-		self.log('train_loss', loss)
+		self.log('loss', loss ,prog_bar=True, logger=True, on_step=True, on_epoch=True)
 		return loss
 
-	def validation_step(self, val_batch, batch_idx):
-		images, labels = val_batch
-		images = images.view(images.size(0), -1)
-		outputs = self.lyrs(images)
-		loss = F.cross_entropy(outputs, labels)
-		self.log('val_loss', loss)
+	# def validation_step(self, val_batch, batch_idx):
+	# 	images, labels = val_batch
+	# 	images = images.view(images.size(0), -1)
+	# 	outputs = self.lyrs(images)
+	# 	loss = F.cross_entropy(outputs, labels)
+	# 	self.log('val_loss', loss)
 
 # data
 dataset = MNIST('', train=True, download=True, transform=transforms.ToTensor())
 mnist_train, mnist_val = random_split(dataset, [55000, 5000])
 
 train_loader = DataLoader(mnist_train, batch_size=32)
-val_loader = DataLoader(mnist_val, batch_size=32)
+# val_loader = DataLoader(mnist_val, batch_size=32)
 
 # model
 model = LitNN()
 
 # training
 trainer = pl.Trainer(max_epochs=1)
-trainer.fit(model, train_loader, val_loader)
+trainer.fit(model, train_loader)
 
 print(model)
+
+!ls lightning_logs/
+
